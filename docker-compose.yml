@@ -1,0 +1,63 @@
+version: "3"
+services:
+
+  timesketch:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - elasticsearch
+      - postgres
+      - redis
+    environment:
+      - POSTGRES_USER=timesketch
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_ADDRESS=postgres
+      - POSTGRES_PORT=5432
+      - ELASTIC_ADDRESS=elasticsearch
+      - ELASTIC_PORT=9200
+      - REDIS_ADDRESS=redis
+      - REDIS_PORT=6379
+    volumes:
+      - timelines:/timelines
+    restart: always
+
+  worker:
+    build: .
+    command: worker
+    depends_on:
+      - elasticsearch
+      - postgres
+      - redis
+    environment:
+      - POSTGRES_USER=timesketch
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_ADDRESS=postgres
+      - POSTGRES_PORT=5432
+      - ELASTIC_ADDRESS=elasticsearch
+      - ELASTIC_PORT=9200
+      - REDIS_ADDRESS=redis
+      - REDIS_PORT=6379
+    volumes:
+      - timelines:/timelines
+    restart: always
+
+  elasticsearch:
+    image: elasticsearch:2.4
+    volumes:
+      - ./contrib:/usr/share/elasticsearch/config/scripts
+    restart: always
+
+  postgres:
+    image: postgres:9.6-alpine
+    environment:
+      - POSTGRES_USER=timesketch
+      - POSTGRES_PASSWORD=password
+    restart: always
+
+  redis:
+    image: redis:alpine
+    restart: always
+
+volumes:
+  timelines:
