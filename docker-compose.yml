@@ -45,7 +45,7 @@ services:
     restart: always
 
   elasticsearch:
-    image: elasticsearch:2.4
+    image: elasticsearch:5-alpine 
     volumes:
       - ./contrib:/usr/share/elasticsearch/config/scripts
     restart: always
