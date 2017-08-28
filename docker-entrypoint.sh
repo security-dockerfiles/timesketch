@@ -39,7 +39,7 @@ function prepare {
 		sed -i 's#ELASTIC_HOST = u\x27127.0.0.1\x27#ELASTIC_HOST = u\x27'$ELASTIC_ADDRESS'\x27#' /etc/timesketch.conf
 		sed -i 's#ELASTIC_PORT = 9200#ELASTIC_PORT = '$ELASTIC_PORT'#' /etc/timesketch.conf
 	else
-		# Log an error since we need the above-listed environment variables
+		# Log a warning since we may need the above-listed environment variables
 		echo "Please pass values for the ELASTIC_ADDRESS and ELASTIC_PORT environment variables"
 	fi
 
@@ -48,7 +48,7 @@ function prepare {
 		sed -i 's#NEO4J_HOST = u\x27127.0.0.1\x27#NEO4J_HOST = u\x27'$NEO4J_ADDRESS'\x27#' /etc/timesketch.conf
 		sed -i 's#NEO4J_PORT = 9200#NEO4J_PORT = '$NEO4J_PORT'#' /etc/timesketch.conf
 	else
-		# Log an error since we need the above-listed environment variables
+		# Log a warning since we may need the above-listed environment variables
 		echo "Please pass values for the NEO4J_ADDRESS and NEO4J_PORT environment variables"
 	fi
 }
@@ -66,8 +66,6 @@ if [ "$1" = 'timesketch' ]; then
 		TIMESKETCH_PASSWORD="$(openssl rand -base64 32)"
 		echo "TIMESKETCH_PASSWORD set randomly to: ${TIMESKETCH_PASSWORD}";
 	fi
-	
-	tsctl add_user -u "$TIMESKETCH_USER" -p "$TIMESKETCH_PASSWORD"
 
 	# Run the Timesketch server (without SSL)
 	exec `tsctl runserver -h 0.0.0.0 -p 5000`
