@@ -1,35 +1,62 @@
 # Use the official Docker Hub Ubuntu latest LTS version base image
 FROM ubuntu:16.04
 
-# Install Timesketch dependencies
+LABEL maintainer "contact@ilyaglotov.com"
+
 RUN apt-get update \
-  && apt-get -y install python-pip \
-                        python-dev \
+  \
+  # Install main deps
+  && apt-get -y install git \
                         libffi-dev \
+                        python-dev \
+                        python-pip \
                         python-psycopg2 \
                         software-properties-common \
-                        git
-
-# Install Plaso
-RUN add-apt-repository ppa:gift/stable \
+                        \
+  # Install Plaso
+  && add-apt-repository ppa:gift/stable \
   && apt-get update \
   && apt-get -y install \
-    python-plaso \
-  && rm -rf /var/lib/apt/lists/*
-
-# Use pip to install Timesketch
-RUN git clone --branch=master \
+                python-plaso \
+                \
+  # Clone latest timesketch repo
+  && git clone --branch=master \
               --depth=1 \
               https://github.com/google/timesketch.git \
-              /tmp/timesketch \
-  && rm -rf /tmp/timesketch/.git \
-  && apt-get purge -y git
-
-RUN pip install /tmp/timesketch
-
-# Copy the Timesketch configuration file into /etc
-RUN cp /usr/local/share/timesketch/timesketch.conf /etc
-RUN chmod 644 /etc/timesketch.conf
+              /usr/local/src/timesketch \
+              \
+  # Install frontend deps: nodejs and yarn
+  && apt-get install -y wget \
+                        apt-transport-https \
+                        \
+  && wget -qO- https://deb.nodesource.com/setup_8.x | bash - \
+  && wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+  && apt-get update \
+  && apt-get install -y nodejs \
+                        yarn \
+                        \
+  && cd /usr/local/src/timesketch \
+  && yarn install \
+  && yarn build \
+  \
+  # Install timesketch
+  && pip install /usr/local/src/timesketch \
+  \
+  # Copy the Timesketch configuration file into /etc
+  && cp /usr/local/share/timesketch/timesketch.conf /etc \
+  && chmod 644 /etc/timesketch.conf \
+  \
+  # Clean up
+  && apt-get purge -y apt-transport-https \
+                      git \
+                      nodejs \
+                      wget \
+                      yarn \
+                      \
+  && rm -rf /usr/local/src/timesketch/.git \
+  && rm -rf /root/.cache \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy the entrypoint script into the container
 COPY docker-entrypoint.sh /
