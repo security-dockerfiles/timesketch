@@ -57,16 +57,6 @@ function prepare {
 if [ "$1" = 'timesketch' ]; then
 	prepare
 
-	# Set up web credentials
-	if [ -z ${TIMESKETCH_USER+x} ]; then
-		TIMESKETCH_USER="admin"
-		echo "TIMESKETCH_USER set to default: ${TIMESKETCH_USER}";
-	fi
-	if [ -z ${TIMESKETCH_PASSWORD+x} ]; then
-		TIMESKETCH_PASSWORD="$(openssl rand -base64 32)"
-		echo "TIMESKETCH_PASSWORD set randomly to: ${TIMESKETCH_PASSWORD}";
-	fi
-
 	# Run the Timesketch server (without SSL)
 	exec `tsctl runserver -h 0.0.0.0 -p 5000`
 
