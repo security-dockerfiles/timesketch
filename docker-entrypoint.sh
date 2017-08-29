@@ -39,8 +39,9 @@ function prepare {
 		sed -i 's#ELASTIC_HOST = u\x27127.0.0.1\x27#ELASTIC_HOST = u\x27'$ELASTIC_ADDRESS'\x27#' /etc/timesketch.conf
 		sed -i 's#ELASTIC_PORT = 9200#ELASTIC_PORT = '$ELASTIC_PORT'#' /etc/timesketch.conf
 	else
-		# Log a warning since we may need the above-listed environment variables
+		# Log an error since we need the above-listed environment variables
 		echo "Please pass values for the ELASTIC_ADDRESS and ELASTIC_PORT environment variables"
+		exit 1
 	fi
 
 	# Set up the Neo4j connection
@@ -63,6 +64,7 @@ if [ "$1" = 'timesketch' ]; then
 # Run celery worker
 elif [ "$1" = 'worker' ]; then
 	prepare
+	sleep 5
 	exec `celery -A timesketch.lib.tasks worker --uid nobody --autoscale=10,1 --loglevel=info`
 
 # Run a custom command on container start
