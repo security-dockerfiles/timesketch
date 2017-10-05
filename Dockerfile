@@ -8,6 +8,7 @@ RUN apt-get update \
   # Install main deps
   && apt-get -y install git \
                         libffi-dev \
+                        libfontconfig \
                         python-dev \
                         python-pip \
                         python-psycopg2 \
@@ -39,6 +40,7 @@ RUN apt-get update \
   && cd /usr/local/src/timesketch \
   && yarn install \
   && yarn build \
+  && yarn test \
   \
   # Install timesketch
   && pip install /usr/local/src/timesketch \
@@ -53,6 +55,8 @@ RUN apt-get update \
                       nodejs \
                       wget \
                       yarn \
+                      libfontconfig \
+  && apt-get autoremove -y \
                       \
   && rm -rf /usr/local/src/timesketch/.git \
   && rm -rf /root/.cache \
