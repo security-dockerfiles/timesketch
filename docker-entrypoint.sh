@@ -46,11 +46,13 @@ function prepare {
 
 	# Set up the Neo4j connection
 	if [ $NEO4J_ADDRESS ] && [ $NEO4J_PORT ]; then
+
+        sed -i 's#GRAPH_BACKEND_ENABLED = False#GRAPH_BACKEND_ENABLED = True#' /etc/timesketch.conf
 		sed -i 's#NEO4J_HOST = u\x27127.0.0.1\x27#NEO4J_HOST = u\x27'$NEO4J_ADDRESS'\x27#' /etc/timesketch.conf
 		sed -i 's#NEO4J_PORT = 9200#NEO4J_PORT = '$NEO4J_PORT'#' /etc/timesketch.conf
 	else
 		# Log a warning since we may need the above-listed environment variables
-		echo "Please pass values for the NEO4J_ADDRESS and NEO4J_PORT environment variables"
+		echo "Please pass values for the NEO4J_ADDRESS and NEO4J_PORT environment variables if you want graph support"
 	fi
 }
 
