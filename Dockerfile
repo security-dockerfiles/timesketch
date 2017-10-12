@@ -18,6 +18,7 @@ RUN apt-get update \
   && add-apt-repository ppa:gift/stable \
   && apt-get update \
   && apt-get -y install \
+                plaso-tools \
                 python-plaso \
                 \
   # Clone latest timesketch repo
