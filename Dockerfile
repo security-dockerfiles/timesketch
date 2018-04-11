@@ -61,7 +61,8 @@ RUN apt-get update \
                       \
   && rm -rf /usr/local/src/timesketch/.git \
   && rm -rf /root/.cache \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/phantomjs
 
 # Copy the entrypoint script into the container
 COPY docker-entrypoint.sh /
