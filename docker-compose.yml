@@ -45,7 +45,16 @@ services:
     restart: always
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    environment:
+       - discovery.type=single-node
+       - bootstrap.memory_lock=true
+       - network.host=0.0.0.0
+       # - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
       - ./contrib:/usr/share/elasticsearch/config/scripts
       - ./esdata:/usr/share/elasticsearch/data
